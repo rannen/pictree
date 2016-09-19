@@ -28,6 +28,7 @@ func main() {
 
 	if *version {
 		fmt.Println("Version:", appVersion)
+		return
 	}
 
 	if *src == "" {
