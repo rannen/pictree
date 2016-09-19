@@ -1,0 +1,6 @@
+.project
+.exe
+*.crt
+*.key
+.vscode/
+*.gpg
