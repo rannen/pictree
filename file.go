@@ -40,6 +40,22 @@ func MoveFile(src, dstFolder, dstFile string) error {
 
 //CopyFile copies file to a destination folder
 func CopyFile(src, dstFolder, dstFile string) error {
+	sfi, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if !sfi.Mode().IsRegular() {
+		// cannot copy non-regular files (e.g., directories, symlinks, devices, etc.)
+		return fmt.Errorf("CopyFile: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
+	}
+
+	// Test if the file already exists in destination
+	if dfi, err := os.Stat(filepath.Join(dstFolder, dstFile)); err != nil {
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("The file already exists in destination: %s %d", dfi.Name(), dfi.Size())
+		}
+	}
+
 	in, err := os.Open(src)
 	if err != nil {
 		return err
@@ -63,6 +79,12 @@ func CopyFile(src, dstFolder, dstFile string) error {
 		return err
 	}
 
+	// Check if the copy is ok
+	if dfi, err := os.Stat(filepath.Join(dstFolder, dstFile)); err != nil {
+		if !os.SameFile(sfi, dfi) {
+			return fmt.Errorf("Error during the copy of the file: %s", src)
+		}
+	}
 	return nil
 }
 
