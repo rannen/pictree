@@ -21,6 +21,7 @@ var (
 	r       = flag.Bool("r", false, "Rename the file with the extracted date <Year>-<Month>-<Day>_<Originale name>.jpg")
 	src     = flag.String("src", "", "Source folder that contains the files to process.")
 	dst     = flag.String("dst", "", "Destination folder.")
+	llf     = flag.String("f", "", "Name of the last level folder where the files will be stored.")
 )
 
 func main() {
@@ -88,6 +89,11 @@ func main() {
 			fLvl3 := timeTaken.Format("2006-01-02")
 
 			dstFolder := filepath.Join(*dst, fLvl1, fLvl2, fLvl3)
+
+			if *llf != "" {
+				dstFolder = filepath.Join(dstFolder, *llf)
+			}
+
 			dstFile := f.Name()
 			if *r {
 				dstFile = fLvl3 + "_" + f.Name()
@@ -110,5 +116,5 @@ func main() {
 		return nil
 	}
 	filepath.Walk(fmt.Sprint(*src), scan)
-	fmt.Println("[INFO] Total scanned:", numScanned)
+	log.Println("[INFO] Total scanned:", numScanned)
 }
