@@ -28,13 +28,36 @@ func GetMIME(file string) (string, error) {
 
 //MoveFile moves file to a destination folder
 func MoveFile(src, dstFolder, dstFile string) error {
+	sfi, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if !sfi.Mode().IsRegular() {
+		// cannot copy non-regular files (e.g., directories, symlinks, devices, etc.)
+		return fmt.Errorf("CopyFile: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
+	}
 
-	if err := CopyFile(src, dstFolder, dstFile); err != nil {
+	// Test if the file already exists in destination
+	if dfi, err := os.Stat(filepath.Join(dstFolder, dstFile)); err != nil {
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("The file already exists in destination: %s %d", dfi.Name(), dfi.Size())
+		}
+	}
+	// Create folder if it not exists
+	if err := os.MkdirAll(dstFolder, os.ModePerm); err != nil {
+		return err
+	}
+
+	if err := os.Rename(src, filepath.Join(dstFolder, dstFile)); err != nil {
+		return err
+	}
+
+	/*if err := CopyFile(src, dstFolder, dstFile); err != nil {
 		return fmt.Errorf("[ERROR] Failed to create blob in blobstore: %s", err.Error())
 	}
 	if err := os.Remove(src); err != nil {
 		return fmt.Errorf("[ERROR] Failed to remove temp file: %s %s", src, err.Error())
-	}
+	}*/
 	return nil
 }
 
