@@ -1,6 +1,6 @@
 # pictree
 
-pictree is a tool that organizes your pictures or video automatically based on the metadata of the files.
+pictree is a tool that organizes your pictures or videos automatically based on the metadata of the files.
 
 ## usage
 
