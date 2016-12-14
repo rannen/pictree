@@ -63,10 +63,8 @@ func main() {
 			if *v {
 				log.Println("[INFO] MIME type of the file:", mimeType)
 			}
-			if strings.Contains(mimeType, "image/") || strings.Contains(mimeType, "video/") {
-				//var timeTaken time.Time
-				//switch {
-				//case strings.Contains(mimeType, "image/"):
+			if strings.Contains(mimeType, "image/") || strings.Contains(mimeType, "video/") || strings.ToLower(filepath.Ext(path)) == ".mov" {
+
 				timeTaken, err := getExifDate(path)
 				if err != nil {
 					log.Println("[ERROR] Can't read date time:", err.Error())
@@ -74,17 +72,6 @@ func main() {
 					timeTaken = f.ModTime()
 				}
 
-				//case strings.Contains(mimeType, "video/"):
-				// Waiting for a better solution...
-				//timeTaken = f.ModTime()
-
-				//case strings.Contains(mimeType, "text/xml")
-				// Metadata file
-				//mimeType, err := GetMIME(path)
-
-				//default:
-				//timeTaken = f.ModTime()
-				//}
 				if *v {
 					log.Println("[INFO] Detected Date Time:", timeTaken.Format(time.RFC3339))
 				}
