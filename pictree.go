@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	appVersion = "0.1"
+	appVersion = "0.2"
 )
 
 var (
@@ -46,8 +46,11 @@ func main() {
 
 	var scan = func(path string, f os.FileInfo, err error) error {
 		if err != nil {
-			log.Println("[ERROR] ", path, " does not exist or is not accessible on the filesystem:", err.Error())
-			return err
+			if *v {
+				log.Println("[INFO] ", path, " has probably already been moved:", err.Error())
+			}
+			//return err
+			return nil // The file has already been moved
 		}
 		if !f.IsDir() {
 			numScanned++
@@ -107,11 +110,28 @@ func main() {
 					// Is there a Metadata file?
 					MDFilePath := strings.TrimSuffix(path, filepath.Ext(path)) + ".AAE"
 					if _, err := os.Stat(MDFilePath); err == nil {
-						log.Println("[INFO] There is a Meta Data File:", MDFilePath)
+						if *v {
+							log.Println("[INFO] There is a Meta Data File:", MDFilePath)
+						}
 
 						dstMDFile := strings.TrimSuffix(dstFile, filepath.Ext(dstFile)) + ".AAE"
 						if err = MoveFile(MDFilePath, dstFolder, dstMDFile); err != nil {
 							log.Println("[ERROR] Can't move the file", MDFilePath, "to:", dstFolder)
+						}
+					}
+
+					// Is there a .mov file with the same name?
+					// Take Live Photos from iPhone into account
+					movFilePath := strings.TrimSuffix(path, filepath.Ext(path)) + ".MOV"
+					if _, err := os.Stat(movFilePath); err == nil {
+
+						if *v {
+							log.Println("[INFO] There is a Live Photo File:", movFilePath)
+						}
+						numScanned++
+						dstMovFile := strings.TrimSuffix(dstFile, filepath.Ext(dstFile)) + ".MOV"
+						if err = MoveFile(movFilePath, dstFolder, dstMovFile); err != nil {
+							log.Println("[ERROR] Can't move the file", movFilePath, "to:", dstMovFile)
 						}
 					}
 
