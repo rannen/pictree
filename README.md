@@ -3,7 +3,11 @@
 pictree is a tool that organizes your pictures or videos automatically based on the metadata of the files.
 It takes Live Photos into account since version 0.2.
 
-## usage
+## Install
+
+$ go get github.com/rannen/pictree
+
+## Usage
 
 `$ pictree -verbose -src "/Source/Folder" -dst "/Destination/Folder"`
 
